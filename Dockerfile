@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM golang:1.19 as builder
+FROM registry.access.redhat.com/ubi8/go-toolset:1.18.4-20 as builder
 ARG TARGETOS
 ARG TARGETARCH
 
