@@ -1,6 +1,6 @@
 module github.com/cblecker/cluster-api-provider-jira
 
-go 1.19
+go 1.18
 
 require (
 	github.com/onsi/ginkgo/v2 v2.7.0
