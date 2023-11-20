@@ -5,8 +5,8 @@ go 1.19
 require (
 	github.com/onsi/ginkgo/v2 v2.13.1
 	github.com/onsi/gomega v1.30.0
-	k8s.io/apimachinery v0.28.3
-	k8s.io/client-go v0.28.3
+	k8s.io/apimachinery v0.28.4
+	k8s.io/client-go v0.28.4
 	sigs.k8s.io/controller-runtime v0.16.2
 )
 
@@ -57,11 +57,11 @@ require (
 	golang.org/x/tools v0.14.0 // indirect
 	gomodules.xyz/jsonpatch/v2 v2.4.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/protobuf v1.30.0 // indirect
+	google.golang.org/protobuf v1.31.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/api v0.28.3 // indirect
+	k8s.io/api v0.28.4 // indirect
 	k8s.io/apiextensions-apiserver v0.28.0 // indirect
 	k8s.io/component-base v0.28.1 // indirect
 	k8s.io/klog/v2 v2.100.1 // indirect
