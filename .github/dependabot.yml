@@ -12,6 +12,10 @@ updates:
       k8s.io:
         patterns:
           - "k8s.io/*"
+      github.com/onsi:
+        patterns:
+          - "github.com/onsi/ginkgo/*"
+          - "github.com/onsi/gomega/*"
   - package-ecosystem: "docker"
     directory: "/"
     schedule:
