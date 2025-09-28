@@ -1,106 +1,184 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with this Kubernetes Cluster API provider repository.
 
 ## Project Overview
 
-This is a Kubernetes Cluster API provider that uses JIRA/humans as the infrastructure provider. It's built with Kubebuilder and follows standard controller-runtime patterns.
+**cluster-api-provider-jira** is a Kubernetes Cluster API provider that uses JIRA/humans as the infrastructure provider. Built with Kubebuilder following standard controller-runtime patterns.
 
-**Important Note**: According to the README, this is not intended for production use ("Seriously don't use this").
+> **⚠️ Important**: This is not intended for production use ("Seriously don't use this") - it's a proof-of-concept/template project.
 
-## Development Commands
+**Current Status**: Minimal/skeletal implementation with comprehensive scaffolding (metrics, RBAC, security) but lacks actual JIRA provider logic.
 
-### Building and Testing
-- `make build` - Build the manager binary
-- `make test` - Run unit tests (includes manifests, generate, fmt, vet, and setup-envtest)
-- `make test-e2e` - Run end-to-end tests using Kind cluster
-- `make run` - Run the controller locally from your host
+## Quick Reference
 
-### Code Quality
-- `make fmt` - Format Go code
-- `make vet` - Run go vet
-- `make lint` - Run golangci-lint linter
-- `make lint-fix` - Run golangci-lint with automatic fixes
-- `make lint-config` - Verify golangci-lint configuration
-- `make generate` - Generate DeepCopy methods and other code
-- `make manifests` - Generate RBAC, CRDs, and webhook configurations
+### Essential Commands
+```bash
+# Development
+make build              # Build manager binary
+make run                # Run controller locally
+make test               # Run unit tests
+make test-e2e           # Run e2e tests on Kind
 
-### Docker Operations
-- `make docker-build IMG=<registry>/cluster-api-provider-jira:tag` - Build Docker image
-- `make docker-push IMG=<registry>/cluster-api-provider-jira:tag` - Push Docker image
-- `make docker-buildx` - Build multi-platform images
+# Code Quality
+make fmt vet lint       # Format, vet, and lint
+make generate manifests # Generate code and manifests
 
-### Deployment
-- `make install` - Install CRDs into cluster
-- `make deploy IMG=<registry>/cluster-api-provider-jira:tag` - Deploy controller to cluster
-- `make undeploy` - Remove controller from cluster
-- `make uninstall` - Remove CRDs from cluster
+# Docker & Deployment
+make docker-build IMG=<image>  # Build container
+make install deploy           # Install CRDs and deploy
+```
 
-### Testing Infrastructure
-- `make setup-test-e2e` - Set up Kind cluster for e2e tests
-- `make cleanup-test-e2e` - Clean up Kind cluster after tests
-
-### Utility Commands
-- `make help` - Display all available Make targets with descriptions
-- `make build-installer` - Generate consolidated YAML with CRDs and deployment
-- `make all` - Default target (runs build)
-
-## Technical Architecture
-
-### Core Components
-- **cmd/main.go**: Controller manager entry point with standard Kubebuilder setup
-- **test/**: Test suites including e2e tests and utilities
-
-### Configuration Structure
-- **config/default/**: Main kustomization, patches, and metrics service
-- **config/rbac/**: RBAC roles, bindings, service accounts, and leader election
-- **config/manager/**: Controller deployment configuration
-- **config/prometheus/**: Metrics monitoring setup with TLS patches
-- **config/network-policy/**: Network policies for metrics traffic
-- **config/crd/**: Custom Resource Definitions (auto-generated)
-
-### Runtime Features
-- Controller manager follows standard controller-runtime patterns
-- Metrics server with optional TLS and authentication/authorization
-- Health (`/healthz`) and readiness (`/readyz`) probes on port 8081
-- Leader election support with configurable release behavior
-- Webhook server with certificate management
-- HTTP/2 disabled by default for security (CVE mitigation)
-- Configurable TLS certificate paths for both metrics and webhooks
+### Key Directories
+- **cmd/main.go**: Controller manager entry point
+- **config/**: Kustomize configurations (RBAC, CRDs, deployment)
+- **test/**: Test suites and utilities
 
 ## Development Environment
 
 ### Prerequisites
-- Go v1.24.0+
-- Docker v17.03+
-- kubectl v1.11.3+
-- Access to Kubernetes v1.11.3+ cluster
+- Go v1.24.0+, Docker v17.03+, kubectl v1.11.3+
+- Kubernetes v1.11.3+ cluster access
 - Kind (for e2e testing)
 
-### Dependencies and Versions
+### Technology Stack
 - **Go**: 1.24.5
 - **Controller Runtime**: v0.22.1
-- **Kubernetes API**: v0.34.0
-- **Testing Framework**: Ginkgo v2.22.0 and Gomega v1.36.1
-- **Kustomize**: v5.7.1
-- **Controller Tools**: v0.19.0
-- **Golangci-lint**: v2.4.0
-- **EnvTest**: Auto-detected from controller-runtime version
-- **Kubernetes for testing**: Auto-detected from k8s.io/api version
+- **Testing**: Ginkgo v2.22.0 + Gomega v1.36.1
+- **Build Tools**: Kustomize v5.7.1, Controller Tools v0.19.0
 
-### Testing Strategy
-- Unit tests use envtest for Kubernetes API simulation
-- E2E tests run on Kind clusters
-- Ginkgo/Gomega testing framework
+## Cluster API Provider Development
 
-### Security and Configuration
-- Uses Kustomize v5.7.1 for manifest generation
-- Supports both HTTP and HTTPS metrics endpoints (HTTPS by default)
-- Certificate management for webhooks and metrics with auto-generation fallback
-- RBAC-protected metrics endpoint with authentication and authorization
-- Network policies for secure metrics traffic
-- Multi-platform Docker image support (linux/arm64, linux/amd64, linux/s390x, linux/ppc64le)
+### Core Documentation
+- **Primary Reference**: https://cluster-api.sigs.k8s.io/developer/providers/overview
+- **Security Guidelines**: https://cluster-api.sigs.k8s.io/developer/providers/security-guidelines
+- **Best Practices**: https://cluster-api.sigs.k8s.io/developer/providers/best-practices
 
-## Project Status
+## Security Guidelines
 
-This project appears to be minimal/skeletal with very few actual controller implementations, suggesting it may be a template or proof-of-concept rather than a fully functional provider. The scaffolding includes comprehensive metrics, RBAC, and security configurations but lacks actual JIRA provider logic.
+Following the official Cluster API security guidelines, infrastructure providers must implement comprehensive security measures across all aspects of the system.
+
+### Credentials Management & Access Control
+
+#### Least Privilege Principle
+- **Minimal Permissions**: Use the absolute minimum credentials required for each operation
+- **Scoped Access**: Credentials should be scoped to specific resources and operations only
+- **Regular Auditing**: Periodically review and validate credential permissions
+- **Credential Isolation**: Separate credentials for different environments (dev, staging, prod)
+
+#### Short-lived Credentials
+- **Automatic Renewal**: Implement mechanisms for automatic credential renewal before expiration
+- **Token Rotation**: Regular rotation of access tokens and API keys
+- **Expiration Policies**: Set appropriate expiration timeframes based on risk assessment
+- **Failure Handling**: Graceful handling of credential renewal failures
+
+#### Access Restrictions
+- **Namespace Security**: Restrict Cluster API controller namespace access to cloud administrators only
+- **RBAC Implementation**: Use Kubernetes RBAC to enforce fine-grained access controls
+- **Administrative Boundaries**: Clear separation between regular users and cloud infrastructure administrators
+- **Audit Logging**: Comprehensive logging of all access attempts and administrative actions
+
+#### Authentication Requirements
+- **Two-Factor Authentication (2FA)**: Mandatory 2FA for all GitHub maintainer accounts
+- **Second Pair of Eyes**: Implement "second pair of eyes" principle for all privileged operations
+- **Strong Authentication**: Use strong authentication methods for VM access and troubleshooting
+- **Session Management**: Proper session timeout and management for all authenticated sessions
+
+### Resource Protection & Management
+
+#### Rate Limiting & Quotas
+- **Cloud Resource Limits**: Implement rate limits for cloud resource creation and deletion operations
+- **API Throttling**: Apply appropriate throttling to prevent API abuse
+- **Resource Quotas**: Set quotas to prevent resource sprawl and unexpected costs
+- **Monitoring & Alerting**: Monitor resource usage patterns and alert on anomalies
+
+#### Automatic Cleanup & Garbage Collection
+- **Resource Lifecycle**: Implement automatic deletion or marking of unused resources for garbage collection
+- **Configurable Timeouts**: Provide configurable cleanup timeouts for different resource types
+- **Orphaned Resource Detection**: Detect and clean up orphaned or abandoned resources
+- **Cleanup Verification**: Verify successful cleanup and handle cleanup failures appropriately
+
+#### Bootstrap Data Security
+- **Metadata Protection**: Secure machine bootstrap data and metadata during transmission and storage
+- **Immediate Cleanup**: Clean up bootstrap data immediately after successful machine initialization
+- **Encryption in Transit**: Encrypt bootstrap data during transmission to target machines
+- **Temporary Storage**: Minimize storage duration of sensitive bootstrap information
+
+### Sensitive Data Protection
+
+#### Secrets & Credentials Lifecycle
+- **End-to-End Protection**: Protect cluster secrets and credentials throughout their entire lifecycle
+- **Encryption at Rest**: Encrypt sensitive data when stored
+- **Secure Transmission**: Use TLS/encrypted channels for all sensitive data transmission
+- **Memory Protection**: Clear sensitive data from memory after use
+
+#### Data Classification & Handling
+- **Classification Scheme**: Implement data classification to identify sensitive information
+- **Handling Procedures**: Establish procedures for handling different classes of sensitive data
+- **Retention Policies**: Define and enforce data retention and deletion policies
+- **Compliance**: Ensure compliance with relevant data protection regulations
+
+### Infrastructure Security
+
+#### Secure VM Access
+- **Controlled Access**: Implement secure, controlled access mechanisms for VM troubleshooting
+- **Bastion Hosts**: Use bastion hosts or similar controlled access points where appropriate
+- **Access Logging**: Log all VM access attempts and activities for audit purposes
+- **Privilege Escalation**: Controlled and logged privilege escalation procedures
+
+#### Manual Operations Control
+- **Authorization Required**: Require explicit authorization for manual cloud infrastructure operations
+- **Change Management**: Implement change management processes for manual interventions
+- **Documentation**: Document all manual operations and their business justification
+- **Rollback Procedures**: Establish rollback procedures for manual operations
+
+### Security Monitoring & Response
+
+#### Continuous Monitoring
+- **Security Metrics**: Implement security-focused metrics and monitoring
+- **Anomaly Detection**: Monitor for unusual patterns in resource usage or access
+- **Alerting Systems**: Set up alerting for security-relevant events
+- **Regular Assessment**: Conduct regular security assessments and penetration testing
+
+#### Incident Response
+- **Response Procedures**: Establish clear incident response procedures for security events
+- **Communication Plans**: Define communication plans for security incidents
+- **Forensic Capabilities**: Maintain capabilities for security forensics and investigation
+- **Recovery Procedures**: Document and test security incident recovery procedures
+
+### Provider-Specific Adaptations
+Each infrastructure provider must adapt these guidelines to their specific cloud provider's context, taking into account:
+- Provider-specific security features and limitations
+- Available authentication and authorization mechanisms
+- Provider-specific resource management capabilities
+- Compliance requirements specific to the target infrastructure
+
+## Best Practices
+
+### Critical Design Principles
+- **⚠️ Never rely solely on naming conventions for object identification**
+- Use robust identification via tagging and labeling
+- Implement standard Cluster API interfaces and contracts
+- Design for flexibility, extensibility, and external constraints
+- Prioritize security, testability, and robust identification
+
+### Development Workflow
+- Follow Cluster API logging standards
+- Support multiple controller instances for scalability
+- Adopt official Cluster API test framework
+- Ensure comprehensive unit and E2E test coverage
+
+## Project Memory
+
+### Session Instructions
+- After updating project memory, always ensure CLAUDE.md is formatted
+- Tests should not be run when only updating markdown files
+- If uncertain about an answer, confirm guesses before proceeding
+
+### Runtime Features
+- Standard controller-runtime patterns with leader election
+- Metrics server with TLS, authentication/authorization
+- Health/readiness probes on port 8081
+- Webhook server with certificate management
+- HTTP/2 disabled for security (CVE mitigation)
+- Multi-platform Docker support (arm64, amd64, s390x, ppc64le)
