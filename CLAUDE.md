@@ -168,6 +168,89 @@ Each infrastructure provider must adapt these guidelines to their specific cloud
 - Adopt official Cluster API test framework
 - Ensure comprehensive unit and E2E test coverage
 
+## Agent System
+
+This repository uses specialized Claude Code agents for different development tasks. Each agent is optimized for specific responsibilities with appropriate model selection.
+
+### Available Agents
+
+#### arch-design (claude-sonnet-4.5)
+**Purpose**: Architecture and design decisions for Cluster API provider development
+
+**Use for**:
+- Architecture decisions and system design
+- API design and CRD schema planning
+- CAPI contract compliance validation
+- Reconciliation pattern design
+- Security architecture planning
+
+**When to invoke**:
+- "How should we architect..."
+- "Design the API for..."
+- "Does this comply with CAPI contracts?"
+- Before implementing new features or controllers
+
+#### implementation (claude-sonnet-4.5)
+**Purpose**: Implementation of Cluster API provider features
+
+**Use for**:
+- Go code implementation (controllers, webhooks, API types)
+- JIRA integration code
+- Reconciliation logic implementation
+- Following architectural designs
+
+**When to invoke**:
+- "Implement the controller for..."
+- "Add webhook validation for..."
+- "Write the JIRA client integration..."
+- After architectural design is complete
+
+#### quality-security (claude-sonnet-4.5)
+**Purpose**: Testing, code quality, and security validation
+
+**Use for**:
+- Writing unit and E2E tests
+- Security validation and auditing
+- CAPI security guidelines compliance
+- Code quality checks
+- Test coverage analysis
+
+**When to invoke**:
+- "Write tests for..."
+- "Validate security of..."
+- "Review this implementation for compliance..."
+- After implementation is complete
+
+#### docs-ops (claude-haiku-3.5)
+**Purpose**: Documentation, deployment configuration, and release management
+
+**Use for**:
+- User and developer documentation
+- API reference documentation
+- Deployment configuration (Kustomize, manifests)
+- Release management and changelogs
+- Operational guides
+
+**When to invoke**:
+- "Document this feature..."
+- "Create installation guide for..."
+- "Update deployment configuration..."
+- "Prepare release notes for..."
+
+### Agent Workflow
+
+Typical development flow using agents:
+
+1. **Design Phase**: Use `arch-design` to establish architecture and contracts
+2. **Implementation Phase**: Use `implementation` to write code following design
+3. **Validation Phase**: Use `quality-security` to test and validate security
+4. **Documentation Phase**: Use `docs-ops` to document and prepare deployment
+
+### Model Selection Rationale
+
+- **Sonnet 4.5**: Complex tasks requiring deep reasoning (architecture, coding, security)
+- **Haiku 3.5**: Well-defined tasks with large outputs (documentation) - cost-optimized
+
 ## Project Memory
 
 ### Session Instructions
