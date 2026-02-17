@@ -1,10 +1,15 @@
 name: E2E Tests
-permissions:
-  contents: read
 
 on:
   push:
+    branches:
+    - main
   pull_request:
+    branches:
+    - main
+
+permissions:
+  contents: read
 
 jobs:
   test-e2e:
@@ -13,6 +18,8 @@ jobs:
     steps:
       - name: Clone the code
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Setup Go
         uses: actions/setup-go@v6
@@ -20,15 +27,12 @@ jobs:
           go-version-file: go.mod
 
       - name: Install the latest version of kind
-        run: |
-          curl -Lo ./kind https://kind.sigs.k8s.io/dl/latest/kind-linux-amd64
-          chmod +x ./kind
-          sudo mv ./kind /usr/local/bin/kind
+        uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc
+        with:
+          install_only: true
 
       - name: Verify kind installation
         run: kind version
 
       - name: Running Test e2e
-        run: |
-          go mod tidy
-          make test-e2e
+        run: make test-e2e

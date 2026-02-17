@@ -1,10 +1,15 @@
 name: Tests
-permissions:
-  contents: read
 
 on:
   push:
+    branches:
+    - main
   pull_request:
+    branches:
+    - main
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -13,6 +18,8 @@ jobs:
     steps:
       - name: Clone the code
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       - name: Setup Go
         uses: actions/setup-go@v6
@@ -20,6 +27,4 @@ jobs:
           go-version-file: go.mod
 
       - name: Running Tests
-        run: |
-          go mod tidy
-          make test
+        run: make test

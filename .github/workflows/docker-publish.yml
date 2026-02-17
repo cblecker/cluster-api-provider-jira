@@ -29,6 +29,8 @@ jobs:
     steps:
       - name: Check out code
         uses: actions/checkout@v6
+        with:
+          persist-credentials: false
 
       # Install the cosign tool except on PR
       # https://github.com/sigstore/cosign-installer
