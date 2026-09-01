@@ -1,5 +1,5 @@
 # Build the manager binary
-FROM registry.access.redhat.com/hi/go:1.26 AS builder
+FROM registry.access.redhat.com/hi/go:1.27 AS builder
 ARG TARGETOS
 ARG TARGETARCH
 
