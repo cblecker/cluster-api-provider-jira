@@ -27,7 +27,7 @@ jobs:
           go-version-file: go.mod
 
       - name: Install the latest version of kind
-        uses: helm/kind-action@1544676c07bb3570fcb70166beaa07c4528fd4aa
+        uses: helm/kind-action@ea822c7bf1874f08e5a491df991c228edffc3376
         with:
           install_only: true
 
